@@ -22,7 +22,7 @@ public class EmployeeRepositoryTests {
 
     @BeforeEach
     public void setup(){
-        employee = Employee.builder().firstName("Jardel").lastName("Kuhn").email("mail@mail.com").build();
+
     }
 
     @Test
