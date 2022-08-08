@@ -16,6 +16,10 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 @WebMvcTest
@@ -29,6 +33,23 @@ public class EmployeeControllerTests {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Test
+    public void givenListOffEmployees_whenGetAllEmployees_thenReturnEmployeesList () throws Exception {
+        //g
+        List<Employee> employeeList = new ArrayList<>();
+        employeeList.add(Employee.builder().firstName("Jardel").lastName("Kuhn").email("mail@mail.com").build());
+        employeeList.add(Employee.builder().firstName("Jardel2").lastName("Kuhn2").email("mail2@mail.com").build());
+        BDDMockito.given(employeeService.getAllEmployee()).willReturn(employeeList);
+
+        //w
+        ResultActions response = mockMvc.perform(get("/api/employees"));
+
+        //t
+        response.andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.size()", CoreMatchers.is(employeeList.size())))
+                .andDo(MockMvcResultHandlers.print());
+    }
 
     @Test
     public void givenEmployeeObject_whenCreateEmployee_thenReturnSavedEmployee() throws Exception {
