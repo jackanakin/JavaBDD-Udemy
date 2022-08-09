@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -34,6 +35,38 @@ public class EmployeeControllerTests {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Test
+    public void givenInvalidEmployeeId_whenGetEmployeeById_thenReturnEmpty () throws Exception {
+        //g
+        Long employeeId = 1L;
+        given(employeeService.getEmployeeById(employeeId)).willReturn(Optional.empty());
+
+        //w
+        ResultActions response = mockMvc.perform(get("/api/employees/{id}", employeeId));
+
+        //t
+        response.andExpect(status().isNotFound())
+                .andDo(print());
+    }
+
+    @Test
+    public void givenEmployeeId_whenGetEmployeeById_thenReturnEmployeeObject () throws Exception {
+        //g
+        Long employeeId = 1L;
+        Employee employee = Employee.builder().id(employeeId).firstName("Jardel").lastName("Kuhn").email("mail@mail.com").build();
+        given(employeeService.getEmployeeById(employeeId)).willReturn(Optional.of(employee));
+
+        //w
+        ResultActions response = mockMvc.perform(get("/api/employees/{id}", employeeId));
+
+        //t
+        response.andExpect(status().isOk())
+                .andExpect(jsonPath("$.firstName", is(employee.getFirstName())))
+                .andExpect(jsonPath("$.lastName", is(employee.getLastName())))
+                .andExpect(jsonPath("$.email", is(employee.getEmail())))
+                .andDo(print());
+    }
 
     @Test
     public void givenListOffEmployees_whenGetAllEmployees_thenReturnEmployeesList () throws Exception {
