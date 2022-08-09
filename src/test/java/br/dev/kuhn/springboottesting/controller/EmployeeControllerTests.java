@@ -46,7 +46,7 @@ public class EmployeeControllerTests {
         ResultActions response = mockMvc.perform(delete("/api/employees/{id}", employeeId));
 
         //t
-        response.andExpect(status().isNotFound())
+        response.andExpect(status().isOk())
                 .andDo(print());
     }
 
