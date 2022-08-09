@@ -17,6 +17,7 @@ import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willDoNothing;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -34,6 +35,20 @@ public class EmployeeControllerTests {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Test
+    public void givenEmployeeId_whenDeleteEmployee_thenReturn200 () throws Exception {
+        //g
+        Long employeeId = 1L;
+        willDoNothing().given(employeeService).deleteEmployee(employeeId);
+
+        //w
+        ResultActions response = mockMvc.perform(delete("/api/employees/{id}", employeeId));
+
+        //t
+        response.andExpect(status().isNotFound())
+                .andDo(print());
+    }
 
     @Test
     public void givenUpdatedEmployee_whenUpdateEmployee_thenReturn404() throws Exception {
